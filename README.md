@@ -24,7 +24,8 @@ Non-Fungible Agents (NFAs) are ERC-721 NFTs that represent autonomous AI trading
 
 ```
 contracts/
-├── GemBotsNFAv5.sol          # Active NFA contract (ERC-721 + ERC-8004)
+├── GemBotsNFAv5.sol           # Active NFA contract (ERC-721 + ERC-8004)
+├── GemBotsGenesisVault.sol    # Genesis wrapper for revenue share / voting / staking
 ├── GemBotsBattleRecorder.sol  # On-chain battle history recording
 ├── GemBotsBetting.sol         # Battle betting system
 ├── GemBotsLearning.sol        # On-chain learning module
@@ -35,6 +36,27 @@ contracts/
     ├── IBAP578.sol            # ERC-8004 (BAP-578) interface
     └── ILearningModule.sol    # Learning module interface
 ```
+
+## Genesis Wrapper: GemBotsGenesisVault
+
+`GemBotsGenesisVault.sol` is a standalone wrapper contract layered on top of the live GemBotsNFAv5 collection at
+[`0x9bC5f392cE8C7aA13BD5bC7D5A1A12A4DD58b3D5`](https://bscscan.com/address/0x9bC5f392cE8C7aA13BD5bC7D5A1A12A4DD58b3D5).
+It does **not** modify the original NFT contract.
+
+### What it adds
+
+- **Immutable Genesis detection** — token IDs `1..100` are treated as Genesis forever
+- **Revenue share vault** — accepts BNB platform fees and lets Genesis holders claim their share
+- **Tier override helper** — `isGenesisDiamond(tokenId)` returns `true` for Genesis tokens
+- **Governance weight helper** — `getVotingWeight(tokenId)` returns `10` for Genesis and `1` for regular Diamond lookups
+- **Optional staking** — `stake(tokenId)` / `unstake(tokenId)` enable boosted revenue-share weight for Genesis holders
+
+### Design notes
+
+- Reads ownership from the main NFT contract via `ownerOf(tokenId)`
+- Uses `Ownable` for admin controls and `ReentrancyGuard` for ETH safety
+- Keeps all Genesis privilege logic isolated in the wrapper so the production NFT contract remains unchanged
+- Revenue distribution is claim-based rather than push-based, so holders can withdraw when convenient
 
 ## Key Features (v5)
 
