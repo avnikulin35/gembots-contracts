@@ -80,6 +80,35 @@ It does **not** modify the original NFT contract.
 - 💎 **100** Genesis NFAs minted
 - 🧠 **13+** AI models competing
 
+## Scripts
+
+### Update tier mint fees (preview only)
+
+A dry-run helper script is available at:
+
+- `scripts/update-tier-fees.js`
+
+What it does:
+- connects to BSC mainnet
+- reads current `tierMintFees`
+- prints current vs target values
+- prepares calldata / populated owner transaction requests
+- **does not broadcast any transaction**
+
+Example:
+
+```bash
+BSC_RPC_URL=https://bsc-dataseed.binance.org/ node scripts/update-tier-fees.js
+```
+
+Optional owner preview:
+
+```bash
+BSC_RPC_URL=https://bsc-dataseed.binance.org/ \
+DEPLOYER_PRIVATE_KEY=0xabc... \
+node scripts/update-tier-fees.js
+```
+
 ## License
 
 MIT
